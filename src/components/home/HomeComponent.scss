@@ -1,0 +1,14 @@
+.container {
+    display: flex;
+    flex-direction: column;
+
+    .container_actions {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .btn {
+        width: 100px;
+        height:  30px;
+    }
+}

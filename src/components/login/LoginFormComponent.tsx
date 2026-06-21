@@ -11,20 +11,32 @@ import {
     Button
 } from '@mui/material';
 import { LockOutlined, Visibility, VisibilityOff } from '@mui/icons-material';
-import { useAppDispatch } from '../../hooks/StateHooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/StateHooks';
 import { useNavigate } from 'react-router';
-import { initLong } from '../../store/LoginReducer';
+import { loginUser } from '../../store/UserReducer';
 
 export const LoginFormComponent = () => {
     const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
+    const listUsers = useAppSelector((state) => state.user.list);
+
     const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
-        dispatch(initLong(email));
-        navigate('/home');
+        if (email === '' || password === '')
+            return;
+
+        let users = listUsers.filter(u => u.email === email);
+
+        if (users.length === 0)
+            return;
+
+        e.preventDefault();
+        dispatch(loginUser({ email: email, password: password }));
+        navigate('/');
     };
 
     return (
@@ -82,6 +94,8 @@ export const LoginFormComponent = () => {
                             name="password"
                             label="Пароль"
                             type={showPassword ? 'text' : 'password'}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             id="password"
                             autoComplete="current-password"
                             slotProps={{

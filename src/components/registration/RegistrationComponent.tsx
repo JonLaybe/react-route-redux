@@ -10,9 +10,9 @@ import {
     CircularProgress
 } from '@mui/material';
 import { PersonAddOutlined } from '@mui/icons-material';
-import { useAppDispatch } from '../../hooks/StateHooks';
-import { initLong } from '../../store/LoginReducer';
+import { useAppDispatch, useAppSelector } from '../../hooks/StateHooks';
 import { useNavigate } from 'react-router';
+import { registerUser } from '../../store/UserReducer';
 
 interface ErrorsState {
     name?: string;
@@ -33,10 +33,20 @@ export const RegistrationComponent = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
+    const listUsers = useAppSelector((state) => state.user.list);
+
     const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
-        dispatch(initLong(name));
-        navigate('/home'); 
+        if (email === '' || password === '')
+            return;
+
+        let users = listUsers.filter(u => u.email === email);
+
+        if (users.length > 0)
+            return;
+
+        dispatch(registerUser({ name: name, email: email, password: password }));
+        navigate('/');
     };
 
     return (
